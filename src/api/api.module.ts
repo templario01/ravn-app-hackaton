@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ApplicationModule } from '../application/application.module';
 import { PassportModule } from '@nestjs/passport';
-import { AuthController } from './controllers/user.controller';
+import { AuthController } from './controllers/auth.controller';
+import { WorkspaceController } from './controllers/workspace.controller';
 
-const controllers = [AuthController];
+const controllers = [AuthController, WorkspaceController];
 
 @Module({
   imports: [PassportModule, ApplicationModule],

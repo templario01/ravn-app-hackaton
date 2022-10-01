@@ -11,13 +11,18 @@ datasource db {
 }
 
 model User {
-  id           String   @id @default(cuid())
-  username     String   @unique
-  password     String
-  createdAt    DateTime @default(now()) @map(name: "created_at")
-  updatedAt    DateTime @default(now()) @map(name: "updated_at")
-  refreshToken String?  @map(name: "refresh_token")
+  id           String     @id @default(cuid())
+  username     String     @unique
+  password     String?
+  emailSendAt  DateTime   @default(now())
+  verified     Boolean    @default(false)
+  createdAt    DateTime   @default(now()) @map(name: "created_at")
+  updatedAt    DateTime   @default(now()) @map(name: "updated_at")
+  refreshToken String?    @map(name: "refresh_token")
   roles        Role[]
+  bookings     Booking[]
+  workspaces   Workspace? @relation(fields: [workspaceId], references: [id])
+  workspaceId  String?
 
   @@map("user")
 }
@@ -29,4 +34,71 @@ model Role {
   users     User[]
 
   @@map("role")
+}
+
+model Workspace {
+  id        String   @id @default(cuid())
+  name      String?
+  urlPath   String   @unique @map(name: "url_path")
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @default(now()) @map(name: "updated_at")
+  offices   Office[]
+  user      User[]
+
+  @@map("workspace")
+}
+
+model Office {
+  id          String     @id @default(cuid())
+  name        String
+  createdAt   DateTime   @default(now()) @map(name: "created_at")
+  updatedAt   DateTime   @default(now()) @map(name: "updated_at")
+  workspace   Workspace? @relation(fields: [workspaceId], references: [id])
+  workspaceId String?    @map(name: "workspace_id")
+  floors      Floor[]
+
+  @@map("office")
+}
+
+model Floor {
+  id        String        @id @default(cuid())
+  name      String
+  createdAt DateTime      @default(now()) @map(name: "created_at")
+  updatedAt DateTime      @default(now()) @map(name: "updated_at")
+  Office    Office?       @relation(fields: [officeId], references: [id])
+  officeId  String?
+  rooms     MettingRoom[]
+
+  @@map("floor")
+}
+
+model MettingRoom {
+  id        String    @id @default(cuid())
+  name      String
+  createdAt DateTime  @default(now()) @map(name: "created_at")
+  updatedAt DateTime  @default(now()) @map(name: "updated_at")
+  floor     Floor?    @relation(fields: [floorId], references: [id])
+  floorId   String?   @map(name: "floor_id")
+  status    Status
+  bookings  Booking[]
+
+  @@map("metting_room")
+}
+
+model Booking {
+  id        String       @id @default(cuid())
+  name      String
+  createdAt DateTime     @default(now()) @map(name: "created_at")
+  updatedAt DateTime     @default(now()) @map(name: "updated_at")
+  user      User?        @relation(fields: [userId], references: [id])
+  userId    String?      @map(name: "user_id")
+  room      MettingRoom? @relation(fields: [roomId], references: [id])
+  roomId    String?      @map(name: "room_id")
+
+  @@map("booking")
+}
+
+enum Status {
+  BLOCKED
+  CANCELED
 }
