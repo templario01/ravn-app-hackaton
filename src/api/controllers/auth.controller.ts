@@ -5,12 +5,14 @@ import {
   SendInvitationBody,
   ValidateInvitation,
 } from '../../application/auth/dtos/request/create-admin-account.input';
+import { LoginUserBody } from '../../application/auth/dtos/request/login.input';
 import { AcccessTokenResponse, SessionData } from '../../application/auth/dtos/response/auth.response';
 import { AuthService } from '../../application/auth/services/auth.service';
 import { RolesEnum } from '../../application/common/roles.enum';
 import { CurrentUser } from '../decorators/current-user.decorator';
 import { Roles } from '../decorators/role.decorator';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { LoginAuthGuard } from '../guards/login-auth.guard';
 import { RoleGuard } from '../guards/role.guard';
 
@@ -18,10 +20,15 @@ import { RoleGuard } from '../guards/role.guard';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  // @Post('login')
+  // @UseGuards(LoginAuthGuard)
+  // async login(@CurrentUser() user: SessionData): Promise<AcccessTokenResponse> {
+  //   return this.authService.login(user);
+  // }
+
   @Post('login')
-  @UseGuards(LoginAuthGuard)
-  async login(@CurrentUser() user: SessionData): Promise<AcccessTokenResponse> {
-    return this.authService.login(user);
+  async login(@Body() params: LoginUserBody): Promise<AcccessTokenResponse> {
+    return this.authService.SecureLogin(params);
   }
 
   @Post('register')

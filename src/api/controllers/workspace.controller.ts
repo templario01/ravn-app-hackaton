@@ -1,7 +1,11 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { SessionData } from '../../application/auth/dtos/response/auth.response';
 import { RolesEnum } from '../../application/common/roles.enum';
-import { CreateWorkspaceBody } from '../../application/workspace/dtos/create-workspace';
+import {
+  CreateWorkspaceBody,
+  GetOfficesByWorkspace,
+  GetOFloorsByOffice,
+} from '../../application/workspace/dtos/create-workspace';
 import { WorkspaceService } from '../../application/workspace/worskpace.service';
 import { CurrentUser } from '../decorators/current-user.decorator';
 import { Roles } from '../decorators/role.decorator';
@@ -24,5 +28,19 @@ export class WorkspaceController {
   @Get('members')
   async getUsersCount(@CurrentUser() user: SessionData) {
     return this.workspaceService.getWorkspaceAndUsersCount(user.id);
+  }
+
+  @Roles(RolesEnum.ADMIN, RolesEnum.USER)
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Get('offices')
+  async getOfficesByWorkspace(@Query() { workspaceId }: GetOfficesByWorkspace) {
+    return this.workspaceService.getWorkspaceAndUsersCount(workspaceId);
+  }
+
+  @Roles(RolesEnum.ADMIN, RolesEnum.USER)
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Get('offices/floors')
+  async getFloorsByOffice(@Query() { officeId }: GetOFloorsByOffice) {
+    return this.workspaceService.getWorkspaceAndUsersCount(officeId);
   }
 }

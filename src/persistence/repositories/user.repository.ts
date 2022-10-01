@@ -30,7 +30,6 @@ export class UserRepository {
         },
       },
       include: { roles: true },
-      rejectOnNotFound: false,
     });
   }
 
@@ -81,6 +80,7 @@ export class UserRepository {
     return this.prisma.user.upsert({
       where: { username: email },
       create: {
+        password: '',
         workspaces: { connect: { id: workspaceId } },
         username: email,
         verified: false,

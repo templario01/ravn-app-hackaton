@@ -24,7 +24,7 @@ async function createTestAdmin() {
 }
 
 async function createTestUser() {
-  return createUser('user@test.com', 'user', [RolesEnum.USER]);
+  return createUser('user@test.com', 'admin', [RolesEnum.USER]);
 }
 
 async function createRoles(): Promise<Role[]> {
@@ -45,14 +45,12 @@ async function createUser(username: string, password: string, roles: RolesEnum[]
   return prisma.user.upsert({
     where: { username },
     create: {
-      verified: true,
       password: passwordHash,
       username,
       roles: { connect: roles.map((role) => ({ name: role })) },
     },
     update: {
       username,
-      verified: true,
       password: passwordHash,
       roles: { connect: roles.map((role) => ({ name: role })) },
     },

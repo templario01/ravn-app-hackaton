@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { ForbiddenException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { UserRepository } from '../../../persistence/repositories/user.repository';
 import { JwtService } from '@nestjs/jwt';
 import { compare } from 'bcrypt';
@@ -9,6 +9,7 @@ import { CreateAdminAccountBody, SendInvitationBody } from '../dtos/request/crea
 import { MailerService } from '../../mail/mail.service';
 import { WorkspaceService } from '../../workspace/worskpace.service';
 import { Request } from 'express';
+import { LoginUserBody } from '../dtos/request/login.input';
 
 @Injectable()
 export class AuthService {
@@ -27,6 +28,24 @@ export class AuthService {
       accessToken,
       refreshToken,
     };
+  }
+
+  async SecureLogin({ password, email }: LoginUserBody): Promise<AcccessTokenResponse> {
+    const user = await this.userRepository.findUserByEmail(email);
+    if (!user || user.verified === false) return;
+    const matchPassword = await compare(password, user.password);
+    if (matchPassword) {
+      const { id, username } = user;
+      const userRoles = user.roles.map((e) => e.name);
+      const sessionData = { id, username, roles: userRoles };
+      const accessToken = this.createAccessToken(sessionData).token;
+      const refreshToken = this.createRefreshToken(sessionData).token;
+      return {
+        accessToken,
+        refreshToken,
+      };
+    }
+    throw new ForbiddenException('unauthorized');
   }
 
   async validateLogin(username: string, password: string): Promise<SessionData> {

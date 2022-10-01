@@ -1,4 +1,4 @@
-export class LoginUserInput {
-  username: string;
+export class LoginUserBody {
+  email: string;
   password: string;
 }

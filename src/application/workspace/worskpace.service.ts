@@ -36,4 +36,20 @@ export class WorkspaceService {
       workspace: workspace.urlPath,
     };
   }
+
+  async getOfficesByWorkspace(workspaceId: string) {
+    return this.prisma.office.findMany({
+      where: {
+        workspaceId,
+      },
+    });
+  }
+
+  async getFloorsByOffice(officeId: string) {
+    return this.prisma.floor.findMany({
+      where: {
+        officeId,
+      },
+    });
+  }
 }
