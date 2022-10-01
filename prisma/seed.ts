@@ -1,6 +1,6 @@
 import { PrismaClient, Role, User } from '@prisma/client';
-import { RolesEnum } from '../src/common/roles.enum';
 import { hash } from 'bcrypt';
+import { RolesEnum } from '../src/application/common/roles.enum';
 
 const prisma = new PrismaClient();
 
@@ -20,14 +20,11 @@ main()
   });
 
 async function createTestAdmin() {
-  return createUser('admin@test.com', 'admin', [
-    RolesEnum.ADMIN,
-    RolesEnum.USER,
-  ]);
+  return createUser('admin@test.com', 'admin', [RolesEnum.ADMIN, RolesEnum.USER]);
 }
 
 async function createTestUser() {
-  return createUser('user@test.com', 'admin', [RolesEnum.USER]);
+  return createUser('user@test.com', 'user', [RolesEnum.USER]);
 }
 
 async function createRoles(): Promise<Role[]> {
@@ -42,11 +39,7 @@ async function createRoles(): Promise<Role[]> {
   return Promise.all(roleTasks);
 }
 
-async function createUser(
-  username: string,
-  password: string,
-  roles: RolesEnum[],
-): Promise<User> {
+async function createUser(username: string, password: string, roles: RolesEnum[]): Promise<User> {
   const saltRounds = Number(process.env.PASSWORD_SALT_ROUNDS);
   const passwordHash = await hash(password, saltRounds);
   return prisma.user.upsert({
