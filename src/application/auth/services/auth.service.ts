@@ -89,7 +89,7 @@ export class AuthService {
     }
     if (diff < 60) throw new HttpException('Please wait 60 seconds to send another invitation', HttpStatus.CONFLICT);
 
-    const userInvited = await this.userRepository.sendInvitation(params);
+    const userInvited = await this.userRepository.sendInvitation(params, workspace.id);
     if (userInvited) {
       const url = `${req.protocol}://${req.get('host')}/auth/validate-invitation?id=${userInvited.id}`;
       console.log(url);

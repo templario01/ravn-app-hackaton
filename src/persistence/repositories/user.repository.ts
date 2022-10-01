@@ -77,10 +77,11 @@ export class UserRepository {
     });
   }
 
-  async sendInvitation({ email }: SendInvitationBody) {
+  async sendInvitation({ email }: SendInvitationBody, workspaceId: string) {
     return this.prisma.user.upsert({
       where: { username: email },
       create: {
+        workspaces: { connect: { id: workspaceId } },
         username: email,
         verified: false,
         emailSendAt: new Date(),

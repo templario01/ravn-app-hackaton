@@ -3,8 +3,9 @@ import { ApplicationModule } from '../application/application.module';
 import { PassportModule } from '@nestjs/passport';
 import { AuthController } from './controllers/auth.controller';
 import { WorkspaceController } from './controllers/workspace.controller';
+import { UserController } from './controllers/user.controller';
 
-const controllers = [AuthController, WorkspaceController];
+const controllers = [AuthController, WorkspaceController, UserController];
 
 @Module({
   imports: [PassportModule, ApplicationModule],
